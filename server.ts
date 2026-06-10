@@ -125,9 +125,12 @@ async function startServer() {
       }
 
       // Auto-grant admin for the real owner
-      const ADMIN_TG_ID = process.env.ADMIN_TG_ID || 'ВАШ_ID_ЗДЕСЬ';
-      if (id.toString() === ADMIN_TG_ID) {
+      const ADMIN_TG_ID = process.env.ADMIN_TG_ID || '';
+      console.log(`[AUTH] User connecting: ID=${id}, ENV_ADMIN=${ADMIN_TG_ID}`);
+      
+      if (ADMIN_TG_ID && id.toString() === ADMIN_TG_ID) {
           dbUser.is_admin = 1;
+          updateAdminStatus(id, true);
       }
 
 
