@@ -1,0 +1,6 @@
+{
+  "name": "JunoMAfia",
+  "description": "Imported from garmonnnm-lang/JunoMAfia",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
