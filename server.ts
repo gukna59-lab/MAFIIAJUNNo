@@ -13,6 +13,12 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_ADMIN_ID = process.env.TELEGRAM_ADMIN_ID;
 const bot = TELEGRAM_TOKEN ? new TelegramBot(TELEGRAM_TOKEN, { polling: true }) : null;
 
+if (bot) {
+  bot.on('polling_error', (error) => {
+    console.warn('[Telegram] Polling error:', error.message);
+  });
+}
+
 // In-Memory State (Active matches and online players)
 const players: PlayerMap = {};
 const rooms: RoomMap = {};
@@ -354,7 +360,7 @@ async function startServer() {
       };
       
       io.to(room.id).emit('chatMessage', {
-          id: Math.random().toString(),
+          id: crypto.randomUUID(),
           senderId: 'system',
           senderName: 'Голосование',
           text: `Начато голосование за исключение игрока ${players[targetId]?.nickname || '???'}.`,
@@ -387,7 +393,7 @@ async function startServer() {
                    }
                 }
                 io.to(cr.id).emit('chatMessage', {
-                    id: Math.random().toString(),
+                    id: crypto.randomUUID(),
                     senderId: 'system',
                     senderName: 'Система',
                     text: 'Игрок был исключен голосованием.',
@@ -398,7 +404,7 @@ async function startServer() {
                 });
              } else {
                  io.to(cr.id).emit('chatMessage', {
-                    id: Math.random().toString(),
+                    id: crypto.randomUUID(),
                     senderId: 'system',
                     senderName: 'Система',
                     text: 'Голосование за кик провалилось.',
@@ -443,7 +449,7 @@ async function startServer() {
            const targetPlayer = players[targetId];
            if (targetPlayer) {
                io.to(room.id).emit('chatMessage', {
-                  id: Math.random().toString(),
+                  id: crypto.randomUUID(),
                   senderId: 'system',
                   senderName: 'Система',
                   text: `${p.nickname} голосует против ${targetPlayer.nickname}.`,
@@ -472,7 +478,7 @@ async function startServer() {
           if (t) {
              const isMafia = t.role === 'MAFIA' || t.role === 'DON';
              socket.emit('chatMessage', {
-                 id: Math.random().toString(),
+                 id: crypto.randomUUID(),
                  senderId: 'system',
                  senderName: 'Шериф',
                  text: `Вы проверили ${t.nickname}. Роль: ${isMafia ? 'МАФИЯ 🔴' : 'МИРНЫЙ 🟢'}`,
@@ -513,7 +519,7 @@ async function startServer() {
       }
 
       const msg: ChatMessage = {
-        id: Math.random().toString(),
+        id: crypto.randomUUID(),
         senderId: pId,
         senderName: p.nickname,
         text: finalText,
@@ -798,7 +804,7 @@ function startPhaseTimer(io: Server<ClientToServerEvents, ServerToClientEvents>,
                  const targetPlayer = players[targetId];
                  if (targetPlayer) {
                     io.to(r.id).emit('chatMessage', {
-                        id: Math.random().toString(),
+                        id: crypto.randomUUID(),
                         senderId: 'system',
                         senderName: 'Система',
                         text: `${p.nickname} голосует против ${targetPlayer.nickname}.`,
@@ -975,7 +981,7 @@ function advancePhase(io: Server<ClientToServerEvents, ServerToClientEvents>, ro
             const sheriffSocketId = Object.entries(socketToPlayerId).find(([sid, dbid]) => dbid === sheriffId);
             if (sheriffSocketId) {
                 io.to(sheriffSocketId[0]).emit('chatMessage', {
-                  id: Math.random().toString(),
+                  id: crypto.randomUUID(),
                   senderId: 'system',
                   senderName: 'Проверка шерифа',
                   text: `Игрок ${t.nickname} — ${isMafia ? 'МАФИЯ' : 'МИРНЫЙ'}.`,
