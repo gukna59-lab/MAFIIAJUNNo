@@ -189,7 +189,7 @@ function MainMenu() {
                 </div>
               ))}
             </div>
-            {(me?.nickname?.toLowerCase() === 'admin' || me?.isAdmin) && (
+            {me?.isAdmin && (
                <button onClick={() => document.dispatchEvent(new CustomEvent('open-admin-panel'))} className="mt-4 w-full border-2 border-rose-500/50 text-rose-500 p-3 rounded-xl font-bold active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
                  <ShieldAlert size={18} /> Админ Панель
                </button>

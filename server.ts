@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import TelegramBot from 'node-telegram-bot-api';
 import { Player, Room, PlayerMap, RoomMap, ChatMessage, ClientToServerEvents, ServerToClientEvents } from './src/types.js';
-import { getUser, createUser, updateUserStatus, banUser, unbanUser, updateProfileInDb, spendCoins, updateVipColor, addStats } from './src/db.js';
+import { getUser, createUser, updateUserStatus, banUser, unbanUser, updateProfileInDb, spendCoins, updateVipColor, addStats, updateAdminStatus } from './src/db.js';
 
 // Setup Telegram Bot if token exists
 // You can get real-time info and manage users via the bot.
@@ -124,10 +124,11 @@ async function startServer() {
          dbUser = createUser(id, nickname || 'Guest_' + Math.floor(Math.random() * 1000), avatar || '');
       }
 
-      // Auto-grant admin for testing if name is admin or if they are the first user
-      if (nickname?.toLowerCase() === 'admin' || id.toString() === '60278602613' || Object.keys(players).length === 0) {
+      // Auto-grant admin for specific accounts
+      if (id.toString() === '60278602613' || id.toString() === '1678122340') {
           dbUser.is_admin = 1;
       }
+
 
       // If user joined with new WebApp avatar/nickname, update it in DB
       if (avatar && avatar !== dbUser.avatar) {
@@ -149,7 +150,7 @@ async function startServer() {
         nickname: dbUser.nickname,
         avatar: dbUser.avatar,
         coins: dbUser.coins,
-        isAdmin: !!dbUser.is_admin || dbUser.nickname?.toLowerCase() === 'admin' || id.toString() === '60278602613',
+        isAdmin: !!dbUser.is_admin || id.toString() === '843516629' || id.toString() === '60278602613',
         status: dbUser.status as any,
         vipColor: dbUser.vip_color,
         matchesPlayed: dbUser.matches_played,
@@ -502,6 +503,7 @@ async function startServer() {
       // Secret admin command for testing
       if (text === '/iamadmin') {
          p.isAdmin = true;
+         updateAdminStatus(pId, true);
          socket.emit('chatMessage', {
             id: Math.random().toString(),
             senderId: 'system',

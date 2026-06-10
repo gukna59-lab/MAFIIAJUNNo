@@ -103,6 +103,10 @@ export function unbanUser(id: string) {
    db.prepare('UPDATE users SET is_banned = 0 WHERE id = ?').run(id);
 }
 
+export function updateAdminStatus(id: string, isAdmin: boolean) {
+   db.prepare('UPDATE users SET is_admin = ? WHERE id = ?').run(isAdmin ? 1 : 0, id);
+}
+
 export function getAllUsers(): DBUser[] {
   return db.prepare('SELECT * FROM users').all() as DBUser[];
 }
