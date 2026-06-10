@@ -124,8 +124,9 @@ async function startServer() {
          dbUser = createUser(id, nickname || 'Guest_' + Math.floor(Math.random() * 1000), avatar || '');
       }
 
-      // Auto-grant admin for specific accounts
-      if (id.toString() === '60278602613' || id.toString() === '1678122340') {
+      // Auto-grant admin for the real owner
+      const ADMIN_TG_ID = process.env.ADMIN_TG_ID || 'ВАШ_ID_ЗДЕСЬ';
+      if (id.toString() === ADMIN_TG_ID) {
           dbUser.is_admin = 1;
       }
 
@@ -150,7 +151,7 @@ async function startServer() {
         nickname: dbUser.nickname,
         avatar: dbUser.avatar,
         coins: dbUser.coins,
-        isAdmin: !!dbUser.is_admin || id.toString() === '843516629' || id.toString() === '60278602613',
+        isAdmin: !!dbUser.is_admin || id.toString() === ADMIN_TG_ID,
         status: dbUser.status as any,
         vipColor: dbUser.vip_color,
         matchesPlayed: dbUser.matches_played,
@@ -500,21 +501,7 @@ async function startServer() {
       const p = players[pId];
       if (!p) return;
       
-      // Secret admin command for testing
-      if (text === '/iamadmin') {
-         p.isAdmin = true;
-         updateAdminStatus(pId, true);
-         socket.emit('chatMessage', {
-            id: Math.random().toString(),
-            senderId: 'system',
-            senderName: 'Система',
-            text: 'Вы стали администратором!',
-            timestamp: Date.now(),
-            isGlobal: false,
-         });
-         broadcastState(io);
-         return;
-      }
+      // Secret admin command removed
 
       // Bartender effect
       let finalText = text;
